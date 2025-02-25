@@ -1,0 +1,37 @@
+from django.urls import reverse_lazy
+from django.views.generic import CreateView,DetailView, UpdateView 
+from .models import CustomUser
+from .forms import CustomUserCreationForm,ProfileUpdateForm
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+class UserRegisterView(CreateView):
+    model = CustomUser
+    form_class = CustomUserCreationForm
+    template_name = "register.html"
+    success_url = reverse_lazy("login")
+    
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if form.instance.profile_picture:
+            form.instance.profile_picture = form.cleaned_data['profile_picture']
+        form.instance.save()
+        return response
+    
+
+class UserProfileView(LoginRequiredMixin, DetailView):
+    model = CustomUser
+    template_name = "profile.html"
+    
+    def get_object(self):
+        return self.request.user  # Show the logged-in user's profile
+
+class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = CustomUser
+    form_class = ProfileUpdateForm
+    template_name = "profile_edit.html"
+    success_url = reverse_lazy("profile")  # Redirect back to profile after editing
+
+    def get_object(self):
+        return self.request.user  # Allow users to edit their own profile
+
+
