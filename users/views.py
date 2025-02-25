@@ -1,8 +1,10 @@
 from django.urls import reverse_lazy
-from django.views.generic import CreateView,DetailView, UpdateView 
+from django.shortcuts import redirect
+from django.views.generic import CreateView,DetailView, UpdateView
 from .models import CustomUser
 from .forms import CustomUserCreationForm,ProfileUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import logout
 
 class UserRegisterView(CreateView):
     model = CustomUser
@@ -33,5 +35,10 @@ class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_object(self):
         return self.request.user  # Allow users to edit their own profile
+    
+
+def custom_logout(request):
+    logout(request)
+    return redirect('home')
 
 
