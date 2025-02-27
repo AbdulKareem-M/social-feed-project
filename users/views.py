@@ -1,23 +1,22 @@
 from django.urls import reverse_lazy
-from django.shortcuts import redirect
-from django.views.generic import CreateView,DetailView, UpdateView
+from django.shortcuts import redirect, render
+from django.views.generic import DetailView, UpdateView
 from .models import CustomUser
 from .forms import CustomUserCreationForm,ProfileUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
 
-class UserRegisterView(CreateView):
-    model = CustomUser
-    form_class = CustomUserCreationForm
-    template_name = "register.html"
-    success_url = reverse_lazy("login")
-    
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        if form.instance.profile_picture:
-            form.instance.profile_picture = form.cleaned_data['profile_picture']
-        form.instance.save()
-        return response
+def register(request):
+    if request.method == "POST":
+        form = CustomUserCreationForm(request.POST, request.FILES)  # Initialize for POST
+        if form.is_valid():
+            user = form.save()
+            messages.success(request, "Your account has been created! You can now log in.")
+            return redirect('login')
+    else:
+        form = CustomUserCreationForm()  # Initialize for GET (display empty form)
+
+    return render(request, "register.html", {"form": form})
     
 
 class UserProfileView(LoginRequiredMixin, DetailView):
