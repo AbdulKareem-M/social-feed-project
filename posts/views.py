@@ -11,7 +11,6 @@ class PostListView(ListView):
     context_object_name = 'posts'
     ordering = ['-created_at']
     paginate_by = 5
-
 class PostDetailView(View):
     def get(self, request, **kwargs):
         id = kwargs.get('pk')

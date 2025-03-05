@@ -9,10 +9,27 @@
 
 <body>
   {% extends 'base.html' %}
-
-  {% block content %}
-  <h1 class="text-center">Welcome to Social Feed</h1>
-  {% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Latest Posts</h2>
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">{{ post.title }}</h5>
+                    <p class="card-text">{{ post.content|truncatewords:20 }}</p>
+                    <p class="text-muted">By <strong>{{ post.user.username }}</strong> on {{ post.created_at|date:"M d, Y" }}</p>
+                    <a href="{% url 'post_detail' post.pk %}" class="btn btn-primary btn-sm">Read More</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-center">No posts available.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
 
 </body>
 

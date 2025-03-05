@@ -1,10 +1,12 @@
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, render
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import TemplateView, UpdateView
 from .models import CustomUser
 from .forms import CustomUserCreationForm,ProfileUpdateForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import logout
+from django.contrib import messages
+from posts.models import Post
 
 def register(request):
     if request.method == "POST":
@@ -19,12 +21,14 @@ def register(request):
     return render(request, "register.html", {"form": form})
     
 
-class UserProfileView(LoginRequiredMixin, DetailView):
-    model = CustomUser
+class UserProfileView(LoginRequiredMixin, TemplateView):
     template_name = "profile.html"
     
-    def get_object(self):
-        return self.request.user  # Show the logged-in user's profile
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user_posts'] = Post.objects.filter(user = self.request.user).order_by('-created_at')
+        return context
+        
 
 class UserProfileUpdateView(LoginRequiredMixin, UpdateView):
     model = CustomUser
