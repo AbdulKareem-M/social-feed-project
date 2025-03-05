@@ -12,11 +12,16 @@ class PostListView(ListView, LoginRequiredMixin):
     ordering = ['-created_at']
     paginate_by = 5
     login_url = 'login'
-class PostDetailView(View, LoginRequiredMixin):
-    def get(self, request, **kwargs):
-        id = kwargs.get('pk')
-        post = Post.objects.get(id=id)
-        return render(request,'post_detail.html',{'post':post})
+    
+    
+class PostDetailView(DetailView, LoginRequiredMixin):
+    model = Post
+    template_name = 'post_detail.html'
+    
+    def get_context_data(self, **kwargs):
+            context = super().get_context_data(**kwargs)
+            context['comments'] = self.object.comments.all()  # Fetch comments related to the post
+            return context
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
