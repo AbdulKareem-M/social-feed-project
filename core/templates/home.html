@@ -11,6 +11,7 @@
   {% extends 'base.html' %}
 {% block content %}
 <div class="container mt-4">
+    {% if user.is_authenticated %}
     <h2 class="text-center mb-4">Latest Posts</h2>
     <div class="row">
         {% for post in posts %}
@@ -28,6 +29,9 @@
         <p class="text-center">No posts available.</p>
         {% endfor %}
     </div>
+    {%else%}
+    <p class="text-center">You must be <a href="{% url 'login' %}">logged in</a> to see posts.</p>
+    {%endif%}
 </div>
 {% endblock %}
 
